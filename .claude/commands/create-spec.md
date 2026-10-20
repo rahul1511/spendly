@@ -80,7 +80,7 @@ List prerequisite roadmap steps by number and title. If there are none, write No
 
 ## Open Questions
 
-List decisions or requirements that need confirmation. Include only genuine unknowns. If none, write None.
+List decisions or requirements that need confirmation. ask the user with your suggestion , after approval only proceed, Include only genuine unknowns. If none, write None.
 
 
 ## Routes
