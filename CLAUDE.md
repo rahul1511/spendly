@@ -95,7 +95,8 @@ database/db.py ──▶ SQLite (expense_tracker.db, gitignored, not created yet
 | Route | Status | Template / note |
 |---|---|---|
 | `/` | Implemented | `landing.html` |
-| `/register`, `/login` | done (pages only) | `register.html`, `login.html` |
+| `/register` | done (form + POST, Step 2) | `register.html` |
+| `/login` | done (page only) | `login.html`; POST handling in Step 3 |
 | `/terms`, `/privacy` | done | `terms.html`, `privacy.html` |
 | `/logout` | placeholder | Step 3 |
 | `/profile` | placeholder | Step 4 |
@@ -126,6 +127,6 @@ database/db.py ──▶ SQLite (expense_tracker.db, gitignored, not created yet
 - **Never put DB logic in route functions** - it belongs in `database/db.py`
 - **Never install new packages** mid-feature without flagging, keep uv and requirments.txt in sync
 - **Never use JS frameworks** - the forntend is intentionaly vanilla
-- **`database/db.py` is currently empty** - do not assumehealper exist untill the step that  implement them
+- **`database/db.py` is implemented and db created , do not crreate new DB until specifically asked** 
 - **FK enforcement is manual** SQLite forign keys are off by-default; `get_db()` must run `PRAGMA foreign_keys = ON` on every connection
 - The app runs on **port 5001**, don't change this
