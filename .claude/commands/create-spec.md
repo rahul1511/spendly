@@ -10,8 +10,11 @@ Use the user input as the feature request:
 
 
 User Input : $ARGUMENTS
+##  Step-1 : Check working directory is clean
+Run `git status` and check for uncommitted, unstaged , or untracked files. if any exists, Stop immediately and tell the user to commit or stash changes before proceeding.
+DO NOT CONTINUE until the working directory is clean.
 
-## Step-1 " Parse the arguments
+## Step-2 " Parse the arguments
 
 FROM the $ARGUMENTS extract:
 
@@ -25,10 +28,32 @@ FROM the $ARGUMENTS extract:
         - Only a-z, 0-9 and - , _ allowed
         - maximum 40 characters allowed
         - Example : registration , logion-logout 
+4.`branch_name` - format: `feature/<feature_slug>`
+    Example : `feature/registration`
 
     if the step number or feature cannot be determined confidently from $ARGUMENTS, ask the user to clarify before continuing.Do not guess.
 
-## Step 2: Research the codebase
+## Step 3 : Check Branch Name 
+Run `git branch` in shell mode , to list the existing branches. if the `branch_name` is already taken , append a number:
+    Examples: `feature/registration-01`, `feature/registration-02`
+
+## Step 4: Switch to main and take latest pull
+
+RUN
+```
+git checkout main
+git pull origin main
+```
+In shell Mode
+
+## Step 5: Create and switch the feature branch
+RUN:
+```
+git checkout -b <branch_name>
+```
+In shell mode
+
+## Step 6: Research the codebase
 Read the sources before drafting the specification 
     - CLAUDE.md - roadmap, project conventions and schema guidance.
     - app.py - existing routes and schema behavior and functions
@@ -42,7 +67,7 @@ Check the roadmap in Claude.md , if requested step is already marked complete, w
 
 Ground the specification in repository evidence. if a requirement or existing behavior cannot be confirmed list it under OPen Question rather than presenting an assumption as fact.
 
-## Step 3; Write the specs
+## Step 7; Write the specs
 Generate a spec document with this exact structure:
 
 # Spec: <Feature Title>
@@ -119,8 +144,8 @@ Always Include:
 Write a specific, checkable checklist covering the expected behavior, validation, error cases, and relevant security or access-control requirements. Each item must be verifiable through the application or an appropriate test.
 
 Do not claim that tests have been run unless they were actually run.
-]
-## Step 4: Save the specs
+
+## Step 8: Save the specs
 Save the completed specification to :
 Save the spec to : `.claude/specs/<step_number>-<feature_slug>.md`
 
@@ -129,7 +154,7 @@ Create or modify only this specification file. Do not implement the feature or e
 Before saving, confirm that the target filename does not duplicate an existing specification. If it does, stop and tell the user instead of overwriting it.
 
 
-## Step 5 :  Report the user
+## Step 9 :  Report the user
 After saving, respond in this format:
 
 Spec file: .claude/specs/<step-number>-<feature-slug>.md
