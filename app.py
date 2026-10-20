@@ -1,9 +1,9 @@
 import os
 import sqlite3
 
-from flask import Flask, flash, redirect, render_template, request, url_for
+from flask import Flask, flash, redirect, render_template, request, session, url_for
 
-from database.db import create_user, get_db, init_db, seed_db
+from database.db import create_user, get_db, get_user_by_id, init_db, seed_db, verify_user
 
 app = Flask(__name__)
 # The fallback key is for local development only; set SECRET_KEY in any real deployment.
@@ -46,6 +46,19 @@ def validate_registration(name, email, password, confirm_password):
     return None
 
 
+def is_signed_in():
+    """True when the session holds the id of an existing user."""
+    user_id = session.get("user_id")
+    return bool(user_id) and get_user_by_id(user_id) is not None
+
+
+@app.context_processor
+def inject_current_user():
+    """Expose the signed-in user (or None) to every template."""
+    user_id = session.get("user_id")
+    return {"current_user": get_user_by_id(user_id) if user_id else None}
+
+
 # ------------------------------------------------------------------ #
 # Routes                                                              #
 # ------------------------------------------------------------------ #
@@ -57,6 +70,9 @@ def landing():
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
+    if is_signed_in():
+        return redirect(url_for("profile"))
+
     if request.method == "GET":
         return render_template("register.html")
 
@@ -79,9 +95,31 @@ def register():
     return redirect(url_for("register"))
 
 
-@app.route("/login")
+@app.route("/login", methods=["GET", "POST"])
 def login():
-    return render_template("login.html")
+    if is_signed_in():
+        return redirect(url_for("profile"))
+
+    if request.method == "GET":
+        return render_template("login.html")
+
+    email = request.form.get("email", "").strip().lower()
+    password = request.form.get("password", "")
+
+    user = verify_user(email, password)
+    if user is None:
+        return render_template(
+            "login.html", error="Invalid email or password.", email=email
+        )
+
+    session["user_id"] = user["id"]
+    return redirect(url_for("profile"))
+
+
+@app.route("/logout", methods=["POST"])
+def logout():
+    session.clear()
+    return redirect(url_for("landing"))
 
 
 @app.route("/terms")
@@ -98,14 +136,11 @@ def privacy():
 # Placeholder routes — students will implement these                  #
 # ------------------------------------------------------------------ #
 
-@app.route("/logout")
-def logout():
-    return "Logout — coming in Step 3"
-
-
 @app.route("/profile")
 def profile():
-    return "Profile page — coming in Step 4"
+    if not session.get("user_id"):
+        return redirect(url_for("login"))
+    return render_template("profile.html")
 
 
 @app.route("/expenses/add")
