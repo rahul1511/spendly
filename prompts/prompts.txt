@@ -66,3 +66,16 @@ project
 
 Read `.claude/spec/01_database_setup.md` and the existing `databse/db` and `app.py`,
  then genertae an implementation plan Save the plan in .claude/plans/01-database-setup.md
+
+
+# Registrations
+Below is the mention changes , that required to implement in registration page.
+ The password and confirm password should match the exact , if any changes show error.
+
+ The error message should be removed once , `name` and `email` or `password or confirm password` start editing after the error.
+
+ After successful registration , show a card that match the app them , saying:
+ You have successfully registered, Please login to continue,
+
+ - The password filed should have eye button so that user can see the typed password , and also the paste passwords
+ should not work , the confirm password should be filled manually.

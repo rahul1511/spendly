@@ -4,7 +4,9 @@ argument-hint : :Step number and feature name eg: 2 registration"
 allowed-tools : Read, Write, Glob
 ---
 
-You are a Senior software architecture and developer, Planning a new feature for the expense-tracker , Always follow the rules in CLAUDE.md.
+You are a Senior software architecture, Planning a new feature Specification for the expense-tracker Project , Follow the repository's  CLAUDE.md instructions and conventions.
+
+Use the user input as the feature request:
 
 
 User Input : $ARGUMENTS
@@ -24,79 +26,117 @@ FROM the $ARGUMENTS extract:
         - maximum 40 characters allowed
         - Example : registration , logion-logout 
 
-    if yuu cannot infer these from $ARGUMENTS, ask the user to clarify before proceedings.
+    if the step number or feature cannot be determined confidently from $ARGUMENTS, ask the user to clarify before continuing.Do not guess.
 
 ## Step 2: Research the codebase
-Read these files before writing the the specs:
-    - CLAUDE.md - roadmap, conventions,  schema
-    - app.py - existing routes and schema and functions
-    - All file in .claude/specs/ - avoid duplicating existing specs
+Read the sources before drafting the specification 
+    - CLAUDE.md - roadmap, project conventions and schema guidance.
+    - app.py - existing routes and schema behavior and functions
+    - database/db.py - Current database schema and database access patterns. 
+    - Existing file under: .claude/specs/ identify related works and avoid duplication.
+    - Relevant template, static assets, tests and other implementation files needed to understand the feature.
 
-    Check Claude.md to confirm the requested step is not already marked complete. if it is , warn the user and stop.
+Use Glob to find relivenet files, then  read the files that inform the specification. DO not assume a file's content based on its name
+
+Check the roadmap in Claude.md , if requested step is already marked complete, warn the user and stop without creating or changing any spec.
+
+Ground the specification in repository evidence. if a requirement or existing behavior cannot be confirmed list it under OPen Question rather than presenting an assumption as fact.
 
 ## Step 3; Write the specs
 Generate a spec document with this exact structure:
 
-# Spec <feature_title>
+# Spec: <Feature Title>
      
 ## Overview
-    One paragraph describing what this feature does and why it exists at this stage of expense-tracker roadmap.
+    One paragraph explain what the feature does and why it  belongs to the  expense-tracker roadmap.
 
 ## Depends on 
-which previous steps this feature requires to be complete.
+List prerequisite roadmap steps by number and title. If there are none, write None.
+
+## Open Questions
+
+List decisions or requirements that need confirmation. Include only genuine unknowns. If none, write None.
+
 
 ## Routes
-Every new route needed:
-    -METHOD/Path - description - access level (public/logged-in)
-    - If no new routes: state "Now new routes".
+For Each new or changed route, include :
+    - HTTP method and path
+    -Purpose
+    -Access level (public or logged-in)
+    - Relevant inputs and expected outcomes 
+    
+If no new routes are needed: Write "Now new routes".
 
 ## Database Changes
-Add new tables, columns, or constraints needed
--Always verify against database/db.py before writing this.
-if None: state "No database changes."
+Add new tables, columns, indexes, constraints  or migrations.
+Verify proposed changes against `database/db.py` for existing database patterns ,before writing the specs.
+
+if there is no database changes: write "No database changes."
 
 ## Template
 - Create: list of new templates with their path.
-- Modify: list of existing templates and what changes.
+- Modify: list of existing templates and the required changes purpose, without changing any existing feature if using the same template. if required ask to user and take confirmation.
+- Describe relevant UI states, validation messages, and error or success feedback.
+
+If no template or UI changes are required, say so.
 
 ## File to create
-Every new file that create to build the feature.
+If no template or UI changes are required, say so.
+
+Files to Create
+
+List each new file and its purpose. Do not repeat files already listed under Templates and UI unless they need additional explanation.
+
+If no files need to be created, write None.
 
 ## File to changes
-Every file that required changes and why ?
+List each existing file and explain why it must change.
+
+If no existing files need to be modified, write None.
+
 
 
 ## New Dependency
-Any new pip / uv package . if None State :No new Dependencies install " 
-- If yes, then why that package , whats the use ?
+Any newList any new Python or other package dependencies and explain why each is required. 
+
+If none are needed, write No new dependencies.
 
 ## Rules for implementations
-Specific constraints Claude must follow.
+Include only rules relevant to this feature. Follow repository instructions and, where applicable, include these project constraints:
+
 Always Include:
-    - NO SOLAlchemy or ORMs Used 
-    - Only Parameterized Query allowed, No string formatted
-    - Password hashed with werkzeug
-    - Use CSS variable - never hardcode hex values
-    - All template extend base.html
-    - Use Solid Principle , where required only , Do not Over complicate
+    - Do not use SQLAlchemy or another ORM.
+    - Use parameterized SQL queries; never build queries by interpolating user input.
+    - For authentication features, hash passwords with Werkzeug’s password-hashing utilities.
+    - Use existing CSS variables; do not hardcode color hex values.
+    - Extend the project’s base.html template for new pages.
+    - Apply SOLID principles where useful without adding unnecessary complexity.
+
+    Add any feature-specific constraints supported by the repository or user request. Do not invent project conventions.
 
 ## Definition of Done
 
-A Specific testable checklist. Each item must be something that can be verified by running the app.
+Write a specific, checkable checklist covering the expected behavior, validation, error cases, and relevant security or access-control requirements. Each item must be verifiable through the application or an appropriate test.
 
-- Include edge case also
+Do not claim that tests have been run unless they were actually run.
 ]
 ## Step 4: Save the specs
-Once all above mention  step done :
+Save the completed specification to :
 Save the spec to : `.claude/specs/<step_number>-<feature_slug>.md`
 
+Create or modify only this specification file. Do not implement the feature or edit application files.
+
+Before saving, confirm that the target filename does not duplicate an existing specification. If it does, stop and tell the user instead of overwriting it.
+
+
 ## Step 5 :  Report the user
-Print a short summary in tis exact format:
- Spec file : .claude/specs/<step_number>-<feature_slug>.md
- Title : <feature_title>
+After saving, respond in this format:
 
-The tell the user:
-"Review the spec at .claude/specs/<step_number>-<feature_slug>.md  the enter the plan Mode with `shift+tab` to beguin the implementation."
+Spec file: .claude/specs/<step-number>-<feature-slug>.md
+Title: <Feature Title>
 
-ALways Remember: Do not print the full Spec in the chat unless not asked exactly to show full spec
+Review the spec at .claude/specs/<step-number>-<feature-slug>.md, then use Claude Code’s Plan mode `shift+tab(double)`to plan implementation.
+
+Do not print the full specification in chat unless the user explicitly asks for it.
+
 
