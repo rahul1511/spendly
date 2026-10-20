@@ -96,9 +96,9 @@ database/db.py ──▶ SQLite (expense_tracker.db, gitignored, not created yet
 |---|---|---|
 | `/` | Implemented | `landing.html` |
 | `/register` | done (form + POST, Step 2) | `register.html` |
-| `/login` | done (page only) | `login.html`; POST handling in Step 3 |
+| `/login` | done (form + POST, Step 3) | `login.html` |
 | `/terms`, `/privacy` | done | `terms.html`, `privacy.html` |
-| `/logout` | placeholder | Step 3 |
+| `/logout` | done (POST only, Step 3) | redirects to `landing` |
 | `/profile` | placeholder | Step 4 |
 | `/expenses/add` | placeholder | Step 7 |
 | `/expenses/<id>/edit` | placeholder | Step 8 |
