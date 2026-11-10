@@ -118,3 +118,39 @@ def verify_user(email, password):
     if user is not None and check_password_hash(user["password_hash"], password):
         return user
     return None
+
+
+def get_category_totals(user_id):
+    """Per-category spend for one user, largest total first."""
+    with closing(get_db()) as conn:
+        return conn.execute(
+            "SELECT category, SUM(amount) AS total, COUNT(*) AS count"
+            " FROM expenses WHERE user_id = ?"
+            " GROUP BY category ORDER BY total DESC, category",
+            (user_id,),
+        ).fetchall()
+
+
+def get_expense_summary(user_id):
+    """All-time total, expense count and top category (by spend) for one user."""
+    with closing(get_db()) as conn:
+        total, count = conn.execute(
+            "SELECT COALESCE(SUM(amount), 0), COUNT(*) FROM expenses WHERE user_id = ?",
+            (user_id,),
+        ).fetchone()
+        top = conn.execute(
+            "SELECT category FROM expenses WHERE user_id = ?"
+            " GROUP BY category ORDER BY SUM(amount) DESC, category LIMIT 1",
+            (user_id,),
+        ).fetchone()
+    return {"total": total, "count": count, "top_category": top[0] if top else None}
+
+
+def get_recent_expenses(user_id, limit=10):
+    """The user's most recent expenses, newest first."""
+    with closing(get_db()) as conn:
+        return conn.execute(
+            "SELECT id, amount, category, date, description FROM expenses"
+            " WHERE user_id = ? ORDER BY date DESC, id DESC LIMIT ?",
+            (user_id, limit),
+        ).fetchall()

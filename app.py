@@ -1,9 +1,20 @@
 import os
 import sqlite3
+from datetime import datetime
 
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 
-from database.db import create_user, get_db, get_user_by_id, init_db, seed_db, verify_user
+from database.db import (
+    create_user,
+    get_category_totals,
+    get_db,
+    get_expense_summary,
+    get_recent_expenses,
+    get_user_by_id,
+    init_db,
+    seed_db,
+    verify_user,
+)
 
 app = Flask(__name__)
 # The fallback key is for local development only; set SECRET_KEY in any real deployment.
@@ -57,6 +68,28 @@ def inject_current_user():
     """Expose the signed-in user (or None) to every template."""
     user_id = session.get("user_id")
     return {"current_user": get_user_by_id(user_id) if user_id else None}
+
+
+@app.template_filter("format_date")
+def format_date(value):
+    """Format 'YYYY-MM-DD[ HH:MM:SS]' as '12 Nov 2026'; '—' if missing or invalid."""
+    try:
+        return datetime.strptime(str(value)[:10], "%Y-%m-%d").strftime("%d %b %Y")
+    except (TypeError, ValueError):
+        return "—"
+
+
+@app.template_filter("inr")
+def format_inr(value):
+    """Format a number as Indian rupees with lakh/crore grouping: ₹1,23,456.50."""
+    sign = "-" if value < 0 else ""
+    whole, paise = f"{abs(value):.2f}".split(".")
+    head, tail = whole[:-3], whole[-3:]
+    groups = []
+    while head:
+        groups.insert(0, head[-2:])
+        head = head[:-2]
+    return f"{sign}₹{','.join(groups + [tail])}.{paise}"
 
 
 # ------------------------------------------------------------------ #
@@ -122,6 +155,22 @@ def logout():
     return redirect(url_for("landing"))
 
 
+@app.route("/profile", methods=["GET"])
+def profile():
+    user_id = session.get("user_id")
+    user = get_user_by_id(user_id) if user_id else None
+    if user is None:
+        session.pop("user_id", None)
+        return redirect(url_for("login"))
+    return render_template(
+        "profile.html",
+        user=user,
+        summary=get_expense_summary(user["id"]),
+        categories=get_category_totals(user["id"]),
+        recent=get_recent_expenses(user["id"]),
+    )
+
+
 @app.route("/terms")
 def terms():
     return render_template("terms.html")
@@ -135,13 +184,6 @@ def privacy():
 # ------------------------------------------------------------------ #
 # Placeholder routes — students will implement these                  #
 # ------------------------------------------------------------------ #
-
-@app.route("/profile")
-def profile():
-    if not session.get("user_id"):
-        return redirect(url_for("login"))
-    return render_template("profile.html")
-
 
 @app.route("/expenses/add")
 def add_expense():

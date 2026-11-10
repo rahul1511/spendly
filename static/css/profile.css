@@ -1,0 +1,370 @@
+/* ------------------------------------------------------------------ */
+/* Profile page (Step 4)                                               */
+/* ------------------------------------------------------------------ */
+
+.profile-section {
+    min-height: calc(100vh - 60px - 100px);
+    padding: 3rem 2rem;
+}
+
+.profile-container {
+    max-width: 960px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.profile-header { margin-bottom: 0.5rem; }
+
+.profile-title {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 400;
+    color: var(--ink);
+    margin-bottom: 0.5rem;
+}
+
+.profile-subtitle {
+    font-size: 0.9rem;
+    color: var(--ink-muted);
+}
+
+/* Card ------------------------------------------------------------- */
+
+.profile-card {
+    background: var(--paper-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 2rem;
+    min-width: 0;
+    animation: profile-fade-up 0.25s ease-out both;
+}
+
+.profile-section-title {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 400;
+    color: var(--ink);
+    margin-bottom: 1.25rem;
+}
+
+/* Account ---------------------------------------------------------- */
+
+.profile-identity {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-soft);
+}
+
+/* Initial in a circle, wrapped by a slowly rotating green-to-gold ring. */
+.profile-avatar {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    color: var(--accent);
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    animation: profile-avatar-pop 0.4s ease-out both;
+}
+
+.profile-avatar::before,
+.profile-avatar::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    z-index: -1;
+}
+
+.profile-avatar::before {
+    inset: -4px;
+    background: conic-gradient(
+        var(--accent),
+        var(--accent-2),
+        var(--accent-light),
+        var(--accent)
+    );
+    animation: profile-avatar-spin 6s linear infinite;
+}
+
+.profile-avatar::after {
+    inset: 0;
+    background: var(--accent-light);
+    box-shadow: 0 0 0 2px var(--paper-card);
+}
+
+.profile-name {
+    min-width: 0;
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: var(--ink);
+    overflow-wrap: anywhere;
+}
+
+/* Show names in Title Case ("rahul kumar" -> "Rahul Kumar") without changing stored data. */
+.profile-name,
+.profile-person { text-transform: capitalize; }
+
+.profile-details { margin: 0; }
+
+.profile-row {
+    display: grid;
+    grid-template-columns: 8rem 1fr;
+    gap: 1rem;
+    padding: 0.875rem 0;
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.profile-row:last-child { border-bottom: none; }
+
+.profile-row dt {
+    font-size: 0.85rem;
+    color: var(--ink-muted);
+}
+
+.profile-row dd {
+    margin: 0;
+    min-width: 0;
+    color: var(--ink-soft);
+    overflow-wrap: anywhere;
+}
+
+.profile-actions { margin-top: 1.5rem; }
+
+.profile-add {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.profile-add:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* Summary stats ------------------------------------------------------ */
+
+.profile-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+}
+
+.profile-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 1.5rem;
+}
+
+.profile-stat:nth-child(2) { animation-delay: 50ms; }
+.profile-stat:nth-child(3) { animation-delay: 100ms; }
+
+.profile-stat-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.profile-stat-value {
+    font-size: 1.75rem;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+}
+
+.profile-stat-note {
+    font-size: 0.8rem;
+    color: var(--ink-faint);
+}
+
+/* Overview: categories + recent ------------------------------------- */
+
+.profile-overview {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.profile-overview > .profile-card:nth-child(1) { animation-delay: 150ms; }
+.profile-overview > .profile-card:nth-child(2) { animation-delay: 200ms; }
+
+.profile-categories,
+.profile-recent {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* Each category sets --cat-color; unknown names fall back to "other". */
+.profile-category,
+.profile-expense { --cat-color: var(--cat-other); }
+
+.cat-food { --cat-color: var(--cat-food); }
+.cat-transport { --cat-color: var(--cat-transport); }
+.cat-bills { --cat-color: var(--cat-bills); }
+.cat-health { --cat-color: var(--cat-health); }
+.cat-entertainment { --cat-color: var(--cat-entertainment); }
+.cat-shopping { --cat-color: var(--cat-shopping); }
+.cat-other { --cat-color: var(--cat-other); }
+
+.profile-cat-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--radius-sm);
+    color: var(--cat-color);
+    background: color-mix(in srgb, var(--cat-color) 14%, transparent);
+}
+
+.profile-amount {
+    flex-shrink: 0;
+    font-weight: 500;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.profile-category {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.875rem;
+    padding: 0.75rem 0;
+}
+
+.profile-category-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.profile-category-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    font-size: 0.9rem;
+}
+
+.profile-category-name { color: var(--ink-soft); }
+
+.profile-category-count {
+    font-size: 0.8rem;
+    color: var(--ink-muted);
+}
+
+.profile-bar { display: block; overflow: visible; }
+
+.profile-bar-track { fill: var(--paper-warm); }
+
+.profile-bar-fill {
+    fill: var(--cat-color);
+    transform-box: fill-box;
+    transform-origin: left center;
+    animation: profile-bar-grow 0.6s ease-out 0.2s both;
+}
+
+.profile-expense {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.profile-expense:last-child { border-bottom: none; }
+
+.profile-expense-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+}
+
+.profile-expense-desc {
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+    overflow-wrap: anywhere;
+}
+
+.profile-expense-meta {
+    font-size: 0.8rem;
+    color: var(--ink-muted);
+}
+
+/* Empty state -------------------------------------------------------- */
+
+.profile-empty { text-align: center; }
+
+.profile-empty .profile-section-title { margin-bottom: 0.5rem; }
+
+.profile-empty-text {
+    max-width: 440px;
+    margin: 0 auto;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--ink-muted);
+}
+
+/* Motion ------------------------------------------------------------- */
+
+@keyframes profile-fade-up {
+    from { opacity: 0; transform: translateY(8px); }
+}
+
+@keyframes profile-bar-grow {
+    from { transform: scaleX(0); }
+}
+
+@keyframes profile-avatar-pop {
+    from { opacity: 0; transform: scale(0.7); }
+}
+
+@keyframes profile-avatar-spin {
+    to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .profile-card,
+    .profile-bar-fill,
+    .profile-avatar,
+    .profile-avatar::before { animation: none; }
+}
+
+/* Responsive --------------------------------------------------------- */
+
+@media (max-width: 900px) {
+    .profile-stats,
+    .profile-overview { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+    .profile-section { padding: 2rem 1rem; }
+    .profile-card { padding: 1.5rem; }
+    .profile-stat { padding: 1.25rem; }
+    .profile-row { grid-template-columns: 1fr; gap: 0.25rem; }
+    .profile-add {
+        display: flex;
+        justify-content: center;
+        padding-block: 0.875rem; /* tap target of at least 44px */
+    }
+}

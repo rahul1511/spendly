@@ -20,10 +20,13 @@ expense-tracker/
 │   ├── landing.html       # "/"         landing page (hero, video modal)
 │   ├── register.html      # "/register" sign-up form
 │   ├── login.html         # "/login"    sign-in form
+│   ├── profile.html       # "/profile"  account page (Step 4)
 │   ├── terms.html         # "/terms"    terms and conditions
-│   └── privacy.html       # "/privacy"  privacy policy
+│   ├── privacy.html       # "/privacy"  privacy policy
+│   └── macros/icons.html  # inline Lucide SVG icon macro
 ├── static/
-│   ├── css/style.css      # single stylesheet for the whole site
+│   ├── css/style.css      # shared stylesheet (tokens, components)
+│   ├── css/profile.css    # profile page styles
 │   └── js/main.js         # essentially empty
 ├── tests/
 │   └── test_app.py        # pytest-flask; `app` fixture sets TESTING
@@ -99,7 +102,7 @@ database/db.py ──▶ SQLite (expense_tracker.db, gitignored, not created yet
 | `/login` | done (form + POST, Step 3) | `login.html` |
 | `/terms`, `/privacy` | done | `terms.html`, `privacy.html` |
 | `/logout` | done (POST only, Step 3) | redirects to `landing` |
-| `/profile` | placeholder | Step 4 |
+| `/profile` | done (account page, Step 4) | `profile.html` |
 | `/expenses/add` | placeholder | Step 7 |
 | `/expenses/<id>/edit` | placeholder | Step 8 |
 | `/expenses/<id>/delete` | placeholder | Step 9 |

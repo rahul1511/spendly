@@ -16,6 +16,15 @@
     --accent-2-light: #fdf3e3;
     --danger: #c0392b;
     --danger-light: #fdecea;
+
+    /* Expense category colours (match the landing page mock bars) */
+    --cat-food: #e8a540;
+    --cat-transport: #4a7fd6;
+    --cat-bills: #7f6fd0;
+    --cat-health: #3f9b7a;
+    --cat-entertainment: #d46a8c;
+    --cat-shopping: #c17f24;
+    --cat-other: #8a8a8a;
     --border: #e4e1da;
     --border-soft: #eeebe4;
 

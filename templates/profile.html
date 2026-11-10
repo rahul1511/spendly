@@ -1,15 +1,119 @@
 {% extends "base.html" %}
+{% from "macros/icons.html" import icon, category_icon %}
 
 {% block title %}Profile — Spendly{% endblock %}
 
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+{% endblock %}
+
 {% block content %}
 
-<section class="auth-section">
-    <div class="auth-container">
-        <div class="auth-header">
-            <h1 class="auth-title">Hello, {{ current_user["name"] }}</h1>
-            <p class="auth-subtitle">Your profile page is coming soon.</p>
+<section class="profile-section">
+    <div class="profile-container">
+        <header class="profile-header">
+            <h1 class="profile-title">Your profile</h1>
+            <p class="profile-subtitle">Your Spendly account and spending at a glance.</p>
+        </header>
+
+        <section class="profile-card profile-account" aria-labelledby="profile-name">
+            <div class="profile-identity">
+                <span class="profile-avatar" aria-hidden="true">{{ user["name"][:1] | upper }}</span>
+                <h2 class="profile-name" id="profile-name">{{ user["name"] }}</h2>
+            </div>
+
+            <dl class="profile-details">
+                <div class="profile-row">
+                    <dt>Name</dt>
+                    <dd class="profile-person">{{ user["name"] }}</dd>
+                </div>
+                <div class="profile-row">
+                    <dt>Email</dt>
+                    <dd>{{ user["email"] }}</dd>
+                </div>
+                <div class="profile-row">
+                    <dt>Member since</dt>
+                    <dd>{{ user["created_at"] | format_date }}</dd>
+                </div>
+            </dl>
+
+            <div class="profile-actions">
+                <a href="{{ url_for('add_expense') }}" class="btn-primary profile-add">
+                    {{ icon("plus", 16) }}<span>Add expense</span>
+                </a>
+            </div>
+        </section>
+
+        {% if summary["count"] %}
+
+        <section class="profile-stats" aria-label="Spending summary">
+            <div class="profile-card profile-stat">
+                <span class="profile-stat-label">Total spent</span>
+                <span class="profile-stat-value">{{ summary["total"] | inr }}</span>
+                <span class="profile-stat-note">all time</span>
+            </div>
+            <div class="profile-card profile-stat">
+                <span class="profile-stat-label">Expenses</span>
+                <span class="profile-stat-value">{{ summary["count"] }}</span>
+                <span class="profile-stat-note">recorded</span>
+            </div>
+            <div class="profile-card profile-stat">
+                <span class="profile-stat-label">Top category</span>
+                <span class="profile-stat-value">{{ summary["top_category"] }}</span>
+                <span class="profile-stat-note">by amount spent</span>
+            </div>
+        </section>
+
+        <div class="profile-overview">
+            <section class="profile-card" aria-labelledby="profile-categories-title">
+                <h2 class="profile-section-title" id="profile-categories-title">Spending by category</h2>
+                {% set max_total = categories[0]["total"] %}
+                <ul class="profile-categories">
+                    {% for row in categories %}
+                    {% set percent = [row["total"] / max_total * 100, 2] | max %}
+                    <li class="profile-category cat-{{ row['category'] | lower }}">
+                        <span class="profile-cat-icon">{{ category_icon(row["category"]) }}</span>
+                        <div class="profile-category-body">
+                            <div class="profile-category-head">
+                                <span class="profile-category-name">{{ row["category"] }}</span>
+                                <span class="profile-amount">{{ row["total"] | inr }}</span>
+                            </div>
+                            <svg class="profile-bar" width="100%" height="6" aria-hidden="true" focusable="false">
+                                <rect class="profile-bar-track" width="100%" height="6" rx="3"/>
+                                <rect class="profile-bar-fill" width="{{ '%.1f' | format(percent) }}%" height="6" rx="3"/>
+                            </svg>
+                            <span class="profile-category-count">{{ row["count"] }} expense{{ "s" if row["count"] != 1 }}</span>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </section>
+
+            <section class="profile-card" aria-labelledby="profile-recent-title">
+                <h2 class="profile-section-title" id="profile-recent-title">Recent expenses</h2>
+                <ul class="profile-recent">
+                    {% for expense in recent %}
+                    <li class="profile-expense cat-{{ expense['category'] | lower }}">
+                        <span class="profile-cat-icon">{{ category_icon(expense["category"]) }}</span>
+                        <div class="profile-expense-body">
+                            <span class="profile-expense-desc">{{ expense["description"] or expense["category"] }}</span>
+                            <span class="profile-expense-meta">{{ expense["category"] }} · {{ expense["date"] | format_date }}</span>
+                        </div>
+                        <span class="profile-amount">{{ expense["amount"] | inr }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </section>
         </div>
+
+        {% else %}
+
+        <section class="profile-card profile-empty" aria-labelledby="profile-empty-title">
+            <h2 class="profile-section-title" id="profile-empty-title">No expenses yet</h2>
+            <p class="profile-empty-text">Once you add an expense, your totals, category breakdown and recent spending will appear here. Use <strong>Add expense</strong> above to log your first one.</p>
+        </section>
+
+        {% endif %}
     </div>
 </section>
 
